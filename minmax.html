@@ -9,6 +9,93 @@
 
 	<script src="node_modules\chess.js\chess.js"></script>
 
+	<style>
+	 .board {
+	     width: 400px;
+	     margin: auto
+	 }
+
+	 .info {
+	     width: 400px;
+	     margin: auto;
+	 }
+
+	 .move-history {
+	     max-height: 100px;
+	     overflow-y: scroll;
+	 }
+
+	 /*!
+	  * chessboard.js $version$
+	  *
+	  * Copyright 2013 Chris Oakman
+	  * Released under the MIT license
+	  * https://github.com/oakmac/chessboardjs/blob/master/LICENSE
+	  *
+	  * Date: $date$
+	  */
+
+	 /* clearfix */
+	 .clearfix-7da63 {
+	     clear: both;
+	 }
+
+	 /* board */
+	 .board-b72b1 {
+	     border: 2px solid #404040;
+	     -moz-box-sizing: content-box;
+	     box-sizing: content-box;
+	 }
+
+	 /* square */
+	 .square-55d63 {
+	     float: left;
+	     position: relative;
+
+	     /* disable any native browser highlighting */
+	     -webkit-touch-callout: none;
+	     -webkit-user-select: none;
+	     -khtml-user-select: none;
+	     -moz-user-select: none;
+             -ms-user-select: none;
+             user-select: none;
+	 }
+
+	 /* white square */
+	 .white-1e1d7 {
+	     background-color: #f0d9b5;
+	     color: #b58863;
+	 }
+
+	 /* black square */
+	 .black-3c85d {
+	     background-color: #b58863;
+	     color: #f0d9b5;
+	 }
+
+	 /* highlighted square */
+	 .highlight1-32417, .highlight2-9c5d2 {
+	     -webkit-box-shadow: inset 0 0 3px 3px yellow;
+	     -moz-box-shadow: inset 0 0 3px 3px yellow;
+	     box-shadow: inset 0 0 3px 3px yellow;
+	 }
+
+	 /* notation */
+	 .notation-322f9 {
+	     cursor: default;
+	     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	     font-size: 14px;
+	     position: absolute;
+	 }
+	 .alpha-d2270 {
+	     bottom: 1px;
+	     right: 3px;
+	 }
+	 .numeric-fc462 {
+	     top: 2px;
+	     left: 2px;
+	 }
+	</style>
     </head>
     <body>
 	<!-- Used to get images -->
@@ -47,13 +134,13 @@
 
 	 var minimaxRoot =function(depth, game, isMaximisingPlayer) {
 
-	     var newGameMoves = game.ugly_moves();
+	     var newGameMoves = game.moves();
 	     var bestMove = -9999;
 	     var bestMoveFound;
 
 	     for(var i = 0; i < newGameMoves.length; i++) {
 		 var newGameMove = newGameMoves[i]
-		 game.ugly_move(newGameMove);
+		 game.move(newGameMove);
 		 var value = minimax(depth - 1, game, -10000, 10000, !isMaximisingPlayer);
 		 game.undo();
 		 if(value >= bestMove) {
@@ -70,12 +157,12 @@
 		 return -evaluateBoard(game.board());
 	     }
 
-	     var newGameMoves = game.ugly_moves();
+	     var newGameMoves = game.moves();
 
 	     if (isMaximisingPlayer) {
 		 var bestMove = -9999;
 		 for (var i = 0; i < newGameMoves.length; i++) {
-		     game.ugly_move(newGameMoves[i]);
+		     game.move(newGameMoves[i]);
 		     bestMove = Math.max(bestMove, minimax(depth - 1, game, alpha, beta, !isMaximisingPlayer));
 		     game.undo();
 		     alpha = Math.max(alpha, bestMove);
@@ -87,7 +174,7 @@
 	     } else {
 		 var bestMove = 9999;
 		 for (var i = 0; i < newGameMoves.length; i++) {
-		     game.ugly_move(newGameMoves[i]);
+		     game.move(newGameMoves[i]);
 		     bestMove = Math.min(bestMove, minimax(depth - 1, game, alpha, beta, !isMaximisingPlayer));
 		     game.undo();
 		     beta = Math.min(beta, bestMove);
@@ -148,7 +235,7 @@
 
 	 var makeBestMove = function () {
 	     var bestMove = getBestMove(game);
-	     game.ugly_move(bestMove);
+	     game.move(bestMove);
 	     board.position(game.fen());
 	     renderMoveHistory(game.history());
 	     if (game.game_over()) {
