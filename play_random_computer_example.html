@@ -12,12 +12,12 @@
 
     </head>
     <body>
-	<table height="100%">
-	    <td width="95%">
+	<table style="  position: relative; height: auto; min-height: 100% !important;">
+	    <td >
 		<div id="board" ></div>
 	    </td>
-	    <td width="10%">
-		<button>click</button>
+	    <td width="20%">
+		<button>random</button>
 	    </td>
 	</table>
 	<!-- <script src="play_random_computer_example.js" /> -->
@@ -60,7 +60,7 @@
 	     if (move === null) return 'snapback';
 
 	     // make random legal move for black
-	     window.setTimeout(makeRandomMove, 250);
+	     window.setTimeout(makeRandomMove, 10000);
 	 };
 
 
