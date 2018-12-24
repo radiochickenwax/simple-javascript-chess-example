@@ -10,92 +10,92 @@
 	<script src="node_modules\chess.js\chess.old.js"></script>
 
 	<style>
-	 .board {
-	     width: 400px;
-	     margin: auto
-	 }
+		 .board {
+		 width: 400px;
+		 margin: auto
+		 }
 
-	 .info {
-	     width: 400px;
-	     margin: auto;
-	 }
+		 .info {
+		 width: 400px;
+		 margin: auto;
+		 }
 
-	 .move-history {
-	     max-height: 100px;
-	     overflow-y: scroll;
-	 }
+		 .move-history {
+		 max-height: 100px;
+		 overflow-y: scroll;
+		 }
 
-	 /*!
-	  * chessboard.js $version$
-	  *
-	  * Copyright 2013 Chris Oakman
-	  * Released under the MIT license
-	  * https://github.com/oakmac/chessboardjs/blob/master/LICENSE
-	  *
-	  * Date: $date$
-	  */
+		 /*!
+		 * chessboard.js $version$
+		 *
+		 * Copyright 2013 Chris Oakman
+		 * Released under the MIT license
+		 * https://github.com/oakmac/chessboardjs/blob/master/LICENSE
+		 *
+		 * Date: $date$
+		 */
 
-	 /* clearfix */
-	 .clearfix-7da63 {
-	     clear: both;
-	 }
+		 /* clearfix */
+		 .clearfix-7da63 {
+		 clear: both;
+		 }
 
-	 /* board */
-	 .board-b72b1 {
-	     border: 2px solid #404040;
-	     -moz-box-sizing: content-box;
-	     box-sizing: content-box;
-	 }
+		 /* board */
+		 .board-b72b1 {
+		 border: 2px solid #404040;
+		 -moz-box-sizing: content-box;
+		 box-sizing: content-box;
+		 }
 
-	 /* square */
-	 .square-55d63 {
-	     float: left;
-	     position: relative;
+		 /* square */
+		 .square-55d63 {
+		 float: left;
+		 position: relative;
 
-	     /* disable any native browser highlighting */
-	     -webkit-touch-callout: none;
-	     -webkit-user-select: none;
-	     -khtml-user-select: none;
-	     -moz-user-select: none;
-             -ms-user-select: none;
-             user-select: none;
-	 }
+		 /* disable any native browser highlighting */
+		 -webkit-touch-callout: none;
+		 -webkit-user-select: none;
+		 -khtml-user-select: none;
+		 -moz-user-select: none;
+	 -ms-user-select: none;
+	 user-select: none;
+		 }
 
-	 /* white square */
-	 .white-1e1d7 {
-	     background-color: #f0d9b5;
-	     color: #b58863;
-	 }
+		 /* white square */
+		 .white-1e1d7 {
+		 background-color: #f0d9b5;
+		 color: #b58863;
+		 }
 
-	 /* black square */
-	 .black-3c85d {
-	     background-color: #b58863;
-	     color: #f0d9b5;
-	 }
+		 /* black square */
+		 .black-3c85d {
+		 background-color: #b58863;
+		 color: #f0d9b5;
+		 }
 
-	 /* highlighted square */
-	 .highlight1-32417, .highlight2-9c5d2 {
-	     -webkit-box-shadow: inset 0 0 3px 3px yellow;
-	     -moz-box-shadow: inset 0 0 3px 3px yellow;
-	     box-shadow: inset 0 0 3px 3px yellow;
-	 }
+		 /* highlighted square */
+		 .highlight1-32417, .highlight2-9c5d2 {
+		 -webkit-box-shadow: inset 0 0 3px 3px yellow;
+		 -moz-box-shadow: inset 0 0 3px 3px yellow;
+		 box-shadow: inset 0 0 3px 3px yellow;
+		 }
 
-	 /* notation */
-	 .notation-322f9 {
-	     cursor: default;
-	     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	     font-size: 14px;
-	     position: absolute;
-	 }
-	 .alpha-d2270 {
-	     bottom: 1px;
-	     right: 3px;
-	 }
-	 .numeric-fc462 {
-	     top: 2px;
-	     left: 2px;
-	 }
-	</style>
+		 /* notation */
+		 .notation-322f9 {
+		 cursor: default;
+		 font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		 font-size: 14px;
+		 position: absolute;
+		 }
+		 .alpha-d2270 {
+		 bottom: 1px;
+		 right: 3px;
+		 }
+		 .numeric-fc462 {
+		 top: 2px;
+		 left: 2px;
+		 }
+		</style>
     </head>
     <body>
 	<!-- Used to get images -->
@@ -133,7 +133,7 @@
 	 /*The "AI" part starts here */
 
 	 var minimaxRoot =function(depth, game, isMaximisingPlayer) {
-	     console.log("minmaxRoot("+depth+","+game+","+isMaximisingPlayer+")");
+	     //console.log("minmaxRoot("+depth+","+game+","+isMaximisingPlayer+")");
 	     var newGameMoves = game.moves();
 	     var bestMove = -9999;
 	     var bestMoveFound;
@@ -153,7 +153,7 @@
 
 	 var minimax = function (depth, game, alpha, beta, isMaximisingPlayer) {
 	     positionCount++;
-	     console.log("minimax:positionCount="+positionCount);
+	     //console.log("minimax:positionCount="+positionCount);
 	     if (depth === 0) {
 		 return -evaluateBoard(game.board());
 	     }
@@ -191,9 +191,14 @@
 	     var totalEvaluation = 0;
 	     for (var i = 0; i < 8; i++) {
 		 for (var j = 0; j < 8; j++) {
-		     console.log("i="+i+" j=" + j + " totalEvaluation=" + totalEvaluation + " board = " + boardArray[i][j]);
-		     console.log();
-		     totalEvaluation = totalEvaluation + getPieceValue(boardArray[i][j], i ,j);
+		     //console.log("i="+i+" j=" + j + " totalEvaluation=" + totalEvaluation + " board = " + boardArray[i][j]);
+		     var piece = boardArray[i][j];
+		     var pieceValue = getPieceValue(piece,i,j);
+
+		     totalEvaluation = totalEvaluation + pieceValue;
+
+		     //if (piece != null)
+			 //console.log("i="+i+" j=" + j + " totalEvaluation=" + totalEvaluation + " piece.type = " + piece.type + " piece.color = " + piece.color + " pieceValue = " + pieceValue);
 		 }
 	     }
 	     return totalEvaluation;
@@ -223,7 +228,8 @@
 	     };
 
 	     var absoluteValue = getAbsoluteValue(piece);
-	     return piece.color === 'w' ? absoluteValue : -absoluteValue;
+	     var returnVal = piece.color === 'w' ? absoluteValue : -absoluteValue
+	     return returnVal;
 	 };
 
 
