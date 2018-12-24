@@ -133,14 +133,14 @@
 	 /*The "AI" part starts here */
 
 	 var minimaxRoot =function(depth, game, isMaximisingPlayer) {
-	     //console.log("minmaxRoot("+depth+","+game+","+isMaximisingPlayer+")");
-	     var newGameMoves = game.moves();
+
+	     var newGameMoves = game.ugly_moves();
 	     var bestMove = -9999;
 	     var bestMoveFound;
 
 	     for(var i = 0; i < newGameMoves.length; i++) {
 		 var newGameMove = newGameMoves[i]
-		 game.move(newGameMove);
+		 game.ugly_move(newGameMove);
 		 var value = minimax(depth - 1, game, -10000, 10000, !isMaximisingPlayer);
 		 game.undo();
 		 if(value >= bestMove) {
@@ -153,17 +153,16 @@
 
 	 var minimax = function (depth, game, alpha, beta, isMaximisingPlayer) {
 	     positionCount++;
-	     //console.log("minimax:positionCount="+positionCount);
 	     if (depth === 0) {
 		 return -evaluateBoard(game.board());
 	     }
 
-	     var newGameMoves = game.moves();
+	     var newGameMoves = game.ugly_moves();
 
 	     if (isMaximisingPlayer) {
 		 var bestMove = -9999;
 		 for (var i = 0; i < newGameMoves.length; i++) {
-		     game.move(newGameMoves[i]);
+		     game.ugly_move(newGameMoves[i]);
 		     bestMove = Math.max(bestMove, minimax(depth - 1, game, alpha, beta, !isMaximisingPlayer));
 		     game.undo();
 		     alpha = Math.max(alpha, bestMove);
@@ -175,7 +174,7 @@
 	     } else {
 		 var bestMove = 9999;
 		 for (var i = 0; i < newGameMoves.length; i++) {
-		     game.move(newGameMoves[i]);
+		     game.ugly_move(newGameMoves[i]);
 		     bestMove = Math.min(bestMove, minimax(depth - 1, game, alpha, beta, !isMaximisingPlayer));
 		     game.undo();
 		     beta = Math.min(beta, bestMove);
@@ -187,22 +186,108 @@
 	     }
 	 };
 
-	 var evaluateBoard = function (boardArray) {
+	 var evaluateBoard = function (board) {
 	     var totalEvaluation = 0;
 	     for (var i = 0; i < 8; i++) {
 		 for (var j = 0; j < 8; j++) {
-		     //console.log("i="+i+" j=" + j + " totalEvaluation=" + totalEvaluation + " board = " + boardArray[i][j]);
-		     var piece = boardArray[i][j];
-		     var pieceValue = getPieceValue(piece,i,j);
-
-		     totalEvaluation = totalEvaluation + pieceValue;
-
-		     //if (piece != null)
-			 //console.log("i="+i+" j=" + j + " totalEvaluation=" + totalEvaluation + " piece.type = " + piece.type + " piece.color = " + piece.color + " pieceValue = " + pieceValue);
+		     totalEvaluation = totalEvaluation + getPieceValue(board[i][j], i ,j);
 		 }
 	     }
 	     return totalEvaluation;
 	 };
+
+	 var reverseArray = function(array) {
+	     return array.slice().reverse();
+	 };
+
+	 /// Sun Dec 23, 2018  20:56:35
+	 // Added in https://jsfiddle.net/q76uzxwe/1/
+	 // Also went back to the older chess.js : https://cdn.rawgit.com/lhartikk/simple-chess-ai/master/lib/js/chess.js
+	 // This is where we start getting into "piece-square tables"
+	 // Explained a little better at link below
+	 // https://www.chessprogramming.org/Simplified_Evaluation_Function
+	 // kind of a lot to study
+	 
+	 
+	 
+	 var pawnEvalWhite =
+	     [
+		 [0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0],
+		 [5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0,  5.0],
+		 [1.0,  1.0,  2.0,  3.0,  3.0,  2.0,  1.0,  1.0],
+		 [0.5,  0.5,  1.0,  2.5,  2.5,  1.0,  0.5,  0.5],
+		 [0.0,  0.0,  0.0,  2.0,  2.0,  0.0,  0.0,  0.0],
+		 [0.5, -0.5, -1.0,  0.0,  0.0, -1.0, -0.5,  0.5],
+		 [0.5,  1.0, 1.0,  -2.0, -2.0,  1.0,  1.0,  0.5],
+		 [0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0]
+	     ];
+
+	 var pawnEvalBlack = reverseArray(pawnEvalWhite);
+
+	 var knightEval =
+	     [
+		 [-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0],
+		 [-4.0, -2.0,  0.0,  0.0,  0.0,  0.0, -2.0, -4.0],
+		 [-3.0,  0.0,  1.0,  1.5,  1.5,  1.0,  0.0, -3.0],
+		 [-3.0,  0.5,  1.5,  2.0,  2.0,  1.5,  0.5, -3.0],
+		 [-3.0,  0.0,  1.5,  2.0,  2.0,  1.5,  0.0, -3.0],
+		 [-3.0,  0.5,  1.0,  1.5,  1.5,  1.0,  0.5, -3.0],
+		 [-4.0, -2.0,  0.0,  0.5,  0.5,  0.0, -2.0, -4.0],
+		 [-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0]
+	     ];
+
+	 var bishopEvalWhite = [
+	     [ -2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0],
+	     [ -1.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -1.0],
+	     [ -1.0,  0.0,  0.5,  1.0,  1.0,  0.5,  0.0, -1.0],
+	     [ -1.0,  0.5,  0.5,  1.0,  1.0,  0.5,  0.5, -1.0],
+	     [ -1.0,  0.0,  1.0,  1.0,  1.0,  1.0,  0.0, -1.0],
+	     [ -1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0, -1.0],
+	     [ -1.0,  0.5,  0.0,  0.0,  0.0,  0.0,  0.5, -1.0],
+	     [ -2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0]
+	 ];
+
+	 var bishopEvalBlack = reverseArray(bishopEvalWhite);
+
+	 var rookEvalWhite = [
+	     [  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0],
+	     [  0.5,  1.0,  1.0,  1.0,  1.0,  1.0,  1.0,  0.5],
+	     [ -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5],
+	     [ -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5],
+	     [ -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5],
+	     [ -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5],
+	     [ -0.5,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -0.5],
+	     [  0.0,   0.0, 0.0,  0.5,  0.5,  0.0,  0.0,  0.0]
+	 ];
+
+	 var rookEvalBlack = reverseArray(rookEvalWhite);
+
+	 var evalQueen =
+	     [
+		 [ -2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0],
+		 [ -1.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, -1.0],
+		 [ -1.0,  0.0,  0.5,  0.5,  0.5,  0.5,  0.0, -1.0],
+		 [ -0.5,  0.0,  0.5,  0.5,  0.5,  0.5,  0.0, -0.5],
+		 [  0.0,  0.0,  0.5,  0.5,  0.5,  0.5,  0.0, -0.5],
+		 [ -1.0,  0.5,  0.5,  0.5,  0.5,  0.5,  0.0, -1.0],
+		 [ -1.0,  0.0,  0.5,  0.0,  0.0,  0.0,  0.0, -1.0],
+		 [ -2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0]
+	     ];
+
+	 var kingEvalWhite = [
+
+	     [ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
+	     [ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
+	     [ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
+	     [ -3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
+	     [ -2.0, -3.0, -3.0, -4.0, -4.0, -3.0, -3.0, -2.0],
+	     [ -1.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -1.0],
+	     [  2.0,  2.0,  0.0,  0.0,  0.0,  0.0,  2.0,  2.0 ],
+	     [  2.0,  3.0,  1.0,  0.0,  0.0,  1.0,  3.0,  2.0 ]
+	 ];
+
+	 var kingEvalBlack = reverseArray(kingEvalWhite);
+
 
 
 
@@ -210,26 +295,25 @@
 	     if (piece === null) {
 		 return 0;
 	     }
-	     var getAbsoluteValue = function (piece) {
+	     var getAbsoluteValue = function (piece, isWhite, x ,y) {
 		 if (piece.type === 'p') {
-		     return 10;
+		     return 10 + ( isWhite ? pawnEvalWhite[y][x] : pawnEvalBlack[y][x] );
 		 } else if (piece.type === 'r') {
-		     return 50;
+		     return 50 + ( isWhite ? rookEvalWhite[y][x] : rookEvalBlack[y][x] );
 		 } else if (piece.type === 'n') {
-		     return 30;
+		     return 30 + knightEval[y][x];
 		 } else if (piece.type === 'b') {
-		     return 30;
+		     return 30 + ( isWhite ? bishopEvalWhite[y][x] : bishopEvalBlack[y][x] );
 		 } else if (piece.type === 'q') {
-		     return 90;
+		     return 90 + evalQueen[y][x];
 		 } else if (piece.type === 'k') {
-		     return 900;
+		     return 900 + ( isWhite ? kingEvalWhite[y][x] : kingEvalBlack[y][x] );
 		 }
 		 throw "Unknown piece type: " + piece.type;
 	     };
 
-	     var absoluteValue = getAbsoluteValue(piece);
-	     var returnVal = piece.color === 'w' ? absoluteValue : -absoluteValue
-	     return returnVal;
+	     var absoluteValue = getAbsoluteValue(piece, piece.color === 'w', x ,y);
+	     return piece.color === 'w' ? absoluteValue : -absoluteValue;
 	 };
 
 
@@ -244,7 +328,7 @@
 
 	 var makeBestMove = function () {
 	     var bestMove = getBestMove(game);
-	     game.move(bestMove);
+	     game.ugly_move(bestMove);
 	     board.position(game.fen());
 	     renderMoveHistory(game.history());
 	     if (game.game_over()) {
